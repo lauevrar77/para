@@ -1,13 +1,16 @@
 /*
 Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
+	"para.evrard.online/bcs/projects/services"
+	"para.evrard.online/infrastructure/commandbus"
 )
 
 // openCmd represents the open command
@@ -21,7 +24,12 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("open called")
+		ctx := commandbus.NewContext(context.Background())
+		searchString := strings.Join(args, " ")
+		_, err := commandbus.Dispatch(ctx, &services.OpenProjectAction{SearchString: searchString})
+		if err != nil {
+			fmt.Println("Error:", err)
+		}
 	},
 }
 

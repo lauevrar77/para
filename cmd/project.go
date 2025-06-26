@@ -1,13 +1,15 @@
 /*
 Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"para.evrard.online/bcs/projects/services"
+	"para.evrard.online/infrastructure/commandbus"
 )
 
 // projectCmd represents the project command
@@ -20,8 +22,13 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
+	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("project called")
+		ctx := commandbus.NewContext(context.Background())
+		_, err := commandbus.Dispatch(ctx, &services.OpenProjectAction{SearchString: ""})
+		if err != nil {
+			fmt.Println("Error:", err)
+		}
 	},
 }
 

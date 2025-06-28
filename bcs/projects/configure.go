@@ -10,4 +10,5 @@ func Configure(bus commandbus.Bus) {
 	bus.Register(new(services.OpenProjectHandler))
 	bus.Register(new(services.ArchiveProjectHandler))
 	bus.Register(new(services.ProjectPathHandler))
+	bus.Register(new(services.CdProjectHandler))
 }

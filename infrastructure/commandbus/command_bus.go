@@ -19,3 +19,7 @@ func NewContext(parent context.Context) context.Context {
 func Dispatch[T dew.Action](ctx context.Context, action *T) (*T, error) {
 	return dew.Dispatch(ctx, action)
 }
+
+func Query[T dew.QueryAction](ctx context.Context, query *T) (*T, error) {
+	return dew.Query(ctx, query)
+}

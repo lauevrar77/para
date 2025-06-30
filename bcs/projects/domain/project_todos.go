@@ -2,7 +2,6 @@ package domain
 
 import (
 	"bufio"
-	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -28,12 +27,9 @@ func ProjectTodos(searchString string) ([]FileTodo, error) {
 		if d.IsDir() {
 			return nil
 		}
-		fmt.Println(path)
 
 		if strings.HasSuffix(strings.ToLower(d.Name()), ".md") {
-			fmt.Println("Markdown")
 			thisFileTodos, err := fileTodos(path)
-			fmt.Println(thisFileTodos)
 			if err != nil {
 				return err
 			}

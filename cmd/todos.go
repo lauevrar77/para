@@ -33,7 +33,6 @@ to quickly create a Cobra application.`,
 			fmt.Println("Error:", err)
 			os.Exit(1)
 		}
-		fmt.Println(query)
 		for _, todo := range query.Todos {
 			fmt.Println(todo.FilePath)
 			if todo.ParentTitle != "" {

@@ -55,7 +55,7 @@ func fileTodos(path string) ([]FileTodo, error) {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	todoRegex := regexp.MustCompile(`^- \[ ] .*$`)
-	titleRegex := regexp.MustCompile(`^\s*#+ \S+$`)
+	titleRegex := regexp.MustCompile(`^\s*#+ .*$`)
 
 	lastTitle := ""
 	for scanner.Scan() {

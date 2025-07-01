@@ -8,7 +8,7 @@ import (
 
 type ProjectTodosQuery struct {
 	SearchString string
-	Todos        []domain.FileTodo
+	Todos        []domain.MdTodo
 }
 
 type ProjectTodosHandler struct{}

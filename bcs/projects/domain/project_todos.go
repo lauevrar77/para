@@ -1,23 +1,29 @@
 package domain
 
 import (
-	"bufio"
 	"io/fs"
-	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
+
+	"para.evrard.online/bcs/shared"
 )
 
-type FileTodo struct {
-	FilePath    string
-	ParentTitle string
-	Todo        string
-	Done        bool
+type MdTitle struct {
+	Title      string
+	Level      int
+	LineNumber int
 }
 
-func ProjectTodos(searchString string) ([]FileTodo, error) {
-	todos := make([]FileTodo, 0)
+type MdTodo struct {
+	FilePath    string
+	ParentTitle *MdTitle
+	Todo        string
+	Done        bool
+	LineNumber  int
+}
+
+func ProjectTodos(searchString string) ([]MdTodo, error) {
+	todos := make([]MdTodo, 0)
 	path, err := ProjectPath(searchString)
 	if err != nil {
 		return todos, err
@@ -41,35 +47,33 @@ func ProjectTodos(searchString string) ([]FileTodo, error) {
 	return todos, nil
 }
 
-func fileTodos(path string) ([]FileTodo, error) {
-	fileTodos := make([]FileTodo, 0)
+func fileTodos(path string) ([]MdTodo, error) {
+	fileTodos := make([]MdTodo, 0)
 
-	file, err := os.Open(path)
+	doc, err := shared.ParseMd(path)
 	if err != nil {
 		return fileTodos, err
 	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	todoRegex := regexp.MustCompile(`^- \[ ] .*$`)
-	titleRegex := regexp.MustCompile(`^\s*#+ .*$`)
 
-	lastTitle := ""
-	for scanner.Scan() {
-		line := scanner.Text()
-		if titleRegex.Match([]byte(line)) {
-			lastTitle = line
-		} else if todoRegex.Match([]byte(line)) {
-			fileTodos = append(fileTodos, FileTodo{
+	var lastTitle *MdTitle = nil
+	for _, element := range doc.Childrens {
+		if element.Type == "Title" {
+			lastTitle = &MdTitle{
+				Title:      element.Value,
+				Level:      element.Metadata["Level"].(int),
+				LineNumber: element.LineNumber,
+			}
+		} else if element.Type == "TodoItem" {
+			todo := MdTodo{
 				FilePath:    path,
 				ParentTitle: lastTitle,
-				Todo:        line,
-				Done:        false,
-			})
+				Todo:        element.Value,
+				Done:        element.Metadata["Done"].(bool),
+				LineNumber:  element.LineNumber,
+			}
+			fileTodos = append(fileTodos, todo)
 		}
-	}
 
-	if err := scanner.Err(); err != nil {
-		return fileTodos, err
 	}
 
 	return fileTodos, nil

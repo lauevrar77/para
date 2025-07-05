@@ -6,6 +6,10 @@ type Configuration struct {
 	RootPath string
 }
 
+func (c Configuration) InboxPath() string {
+	return filepath.Join(c.RootPath, "0 - Inbox")
+}
+
 func (c Configuration) ProjectsPath() string {
 	return filepath.Join(c.RootPath, "1 - Projects")
 }

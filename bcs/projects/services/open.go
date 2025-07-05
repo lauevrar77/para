@@ -3,11 +3,10 @@ package services
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/exec"
 	"strings"
 
 	"para.evrard.online/bcs/projects/domain"
+	"para.evrard.online/bcs/shared"
 	"para.evrard.online/config"
 )
 
@@ -23,7 +22,7 @@ type OpenProjectHandler struct{}
 
 func (h *OpenProjectHandler) HandleOpenProjectAction(ctx context.Context, cmd *OpenProjectAction) error {
 	if cmd.SearchString == "" {
-		return runYazi(config.Config.ProjectsPath())
+		return shared.RunYazi(config.Config.ProjectsPath())
 	}
 
 	paths, err := domain.SearchProject(cmd.SearchString)
@@ -32,7 +31,7 @@ func (h *OpenProjectHandler) HandleOpenProjectAction(ctx context.Context, cmd *O
 	}
 
 	if len(paths) == 1 {
-		return runYazi(paths[0])
+		return shared.RunYazi(paths[0])
 	} else if len(paths) == 0 {
 		fmt.Println("No project match")
 	} else {
@@ -49,17 +48,4 @@ func (h *OpenProjectHandler) HandleOpenProjectAction(ctx context.Context, cmd *O
 	}
 
 	return nil
-}
-
-func runYazi(path string) error {
-	// Prepare the command to launch yazi
-	osCmd := exec.Command("yazi", path)
-
-	// Connect yazi's input/output to your terminal
-	osCmd.Stdin = os.Stdin
-	osCmd.Stdout = os.Stdout
-	osCmd.Stderr = os.Stderr
-
-	// Start yazi and wait for it to finish
-	return osCmd.Run()
 }

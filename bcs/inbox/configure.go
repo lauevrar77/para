@@ -8,4 +8,5 @@ import (
 func Configure(bus commandbus.Bus) {
 	bus.Register(new(services.OpenInboxHandler))
 	bus.Register(new(services.InboxQuickNoteHandler))
+	bus.Register(new(services.InboxImportHandler))
 }

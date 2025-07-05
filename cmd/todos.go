@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"para.evrard.online/bcs/projects/domain"
 	"para.evrard.online/bcs/projects/services"
+	"para.evrard.online/bcs/shared"
 	"para.evrard.online/infrastructure/commandbus"
 )
 
@@ -35,31 +35,8 @@ to quickly create a Cobra application.`,
 			os.Exit(1)
 		}
 
-		var lastTitle *domain.MdTitle = nil
-		titleChanged := false
-		for _, todo := range query.Todos {
-			titleChanged = false
-			if todo.ParentTitle != nil {
-				if lastTitle == nil || lastTitle.LineNumber != todo.ParentTitle.LineNumber {
-					titleChanged = true
-					fmt.Println(todo.FilePath)
-					for i := 0; i < todo.ParentTitle.Level; i++ {
-						fmt.Printf("#")
-					}
-					fmt.Printf(" %s\n", todo.ParentTitle.Title)
-
-				}
-				lastTitle = todo.ParentTitle
-			}
-			if todo.Done {
-				fmt.Printf("- [x]")
-			} else {
-				fmt.Printf("- [ ]")
-			}
-			fmt.Printf(" %s\n", todo.Todo)
-			if titleChanged {
-				fmt.Println("--------------------\n")
-			}
+		for _, doc := range query.Documents {
+			shared.PrintMdDocument(doc)
 		}
 	},
 }

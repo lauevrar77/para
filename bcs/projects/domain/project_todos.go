@@ -8,25 +8,11 @@ import (
 	"para.evrard.online/bcs/shared"
 )
 
-type MdTitle struct {
-	Title      string
-	Level      int
-	LineNumber int
-}
-
-type MdTodo struct {
-	FilePath    string
-	ParentTitle *MdTitle
-	Todo        string
-	Done        bool
-	LineNumber  int
-}
-
-func ProjectTodos(searchString string) ([]MdTodo, error) {
-	todos := make([]MdTodo, 0)
+func ProjectTodos(searchString string) ([]shared.MdDocument, error) {
+	documents := make([]shared.MdDocument, 0)
 	path, err := ProjectPath(searchString)
 	if err != nil {
-		return todos, err
+		return documents, err
 	}
 
 	filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
@@ -35,46 +21,41 @@ func ProjectTodos(searchString string) ([]MdTodo, error) {
 		}
 
 		if strings.HasSuffix(strings.ToLower(d.Name()), ".md") {
-			thisFileTodos, err := fileTodos(path)
+			filteredDocument, err := filterDocument(path)
 			if err != nil {
 				return err
 			}
-			todos = append(todos, thisFileTodos...)
+			documents = append(documents, *filteredDocument)
 		}
 		return nil
 	})
 
-	return todos, nil
+	return documents, nil
 }
 
-func fileTodos(path string) ([]MdTodo, error) {
-	fileTodos := make([]MdTodo, 0)
-
+func filterDocument(path string) (*shared.MdDocument, error) {
 	doc, err := shared.ParseMd(path)
 	if err != nil {
-		return fileTodos, err
+		return nil, err
 	}
 
-	var lastTitle *MdTitle = nil
-	for _, element := range doc.Childrens {
-		if element.Type == "Title" {
-			lastTitle = &MdTitle{
-				Title:      element.Value,
-				Level:      element.Metadata["Level"].(int),
-				LineNumber: element.LineNumber,
-			}
-		} else if element.Type == "TodoItem" {
-			todo := MdTodo{
-				FilePath:    path,
-				ParentTitle: lastTitle,
-				Todo:        element.Value,
-				Done:        element.Metadata["Done"].(bool),
-				LineNumber:  element.LineNumber,
-			}
-			fileTodos = append(fileTodos, todo)
+	parent := doc.Root
+	doc.Root = *elementTodos(&parent)
+
+	return doc, nil
+}
+
+func elementTodos(parent *shared.MdElement) *shared.MdElement {
+	todos := make([]*shared.MdElement, 0)
+	for _, child := range parent.Childrens {
+		if child.Type == "Title" {
+			child = elementTodos(child)
+			todos = append(todos, child)
+		} else if child.Type == "TodoItem" {
+			todos = append(todos, child)
 		}
-
 	}
+	parent.Childrens = todos
 
-	return fileTodos, nil
+	return parent
 }

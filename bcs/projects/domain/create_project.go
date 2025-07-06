@@ -20,19 +20,13 @@ func CreateProject(name string, client string) error {
 		return err
 	}
 
-	notesPath := filepath.Join(projectPath, "notes")
-	err = os.MkdirAll(notesPath, os.ModePerm)
-	if err != nil {
-		return err
-	}
-
 	filesPath := filepath.Join(projectPath, "files")
 	err = os.MkdirAll(filesPath, os.ModePerm)
 	if err != nil {
 		return err
 	}
 
-	indexPath := filepath.Join(notesPath, "index.md")
+	indexPath := filepath.Join(projectPath, "index.md")
 	file, err := os.Create(indexPath)
 	if err != nil {
 		return err

@@ -13,4 +13,5 @@ func Configure(bus commandbus.Bus) {
 	bus.Register(new(services.CdProjectHandler))
 	bus.Register(new(services.ProjectTodosHandler))
 	bus.Register(new(services.ProjectImportHandler))
+	bus.Register(new(services.ProjectPublishEventHandler))
 }

@@ -4,6 +4,7 @@ go 1.24.4
 
 require (
 	github.com/go-dew/dew v1.0.0
+	github.com/oklog/ulid/v2 v2.1.1
 	github.com/spf13/cobra v1.9.1
 )
 

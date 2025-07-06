@@ -27,9 +27,16 @@ func CreateProject(name string, client string) error {
 	}
 
 	indexPath := filepath.Join(projectPath, "index.md")
-	file, err := os.Create(indexPath)
+	indexFile, err := os.Create(indexPath)
 	if err != nil {
 		return err
 	}
-	return file.Close()
+	defer indexFile.Close()
+
+	eventStorePath := filepath.Join(projectPath, "event_store.json")
+	eventStoreFile, err := os.Create(eventStorePath)
+	if err != nil {
+		return err
+	}
+	return eventStoreFile.Close()
 }
